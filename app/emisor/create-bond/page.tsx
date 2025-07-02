@@ -178,7 +178,7 @@ export default function CreateBondWizard() {
         impuestoRenta: parseFloat(bondData.step2?.impuestoRenta || '30') / 100,
         inflacionSerie: bondData.step2?.indexadoInflacion
             ? Array(numAnios).fill(parseFloat(bondData.step2?.inflacionAnual || '0') / 100)
-            : [],
+            : Array(numAnios).fill(0),
 
         // Step 3 data
         estructuracionPorcentaje: parseFloat(bondData.step3?.estructuracionEmisor || '0') / 100,

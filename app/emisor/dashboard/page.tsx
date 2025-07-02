@@ -69,12 +69,17 @@ export default function EmisorDashboard() {
     refresh: refreshMetrics,
   } = useDashboardMetrics(user?.emisorProfile?.id || '');
 
-  // Verificar autenticación con localStorage como fallback
+  // Verificar autenticación y perfil completo
   useEffect(() => {
-    if (!authLoading && !user) {
-      const userRole = localStorage.getItem("userRole");
-      if (userRole !== "emisor") {
+    if (!authLoading) {
+      if (!user) {
         router.push("/auth/login");
+        return;
+      }
+      
+      // Si el usuario no tiene perfil de emisor, redirigir a completar perfil
+      if (user.role === 'EMISOR' && !user.emisorProfile) {
+        router.push("/auth/emisor-profile");
         return;
       }
     }

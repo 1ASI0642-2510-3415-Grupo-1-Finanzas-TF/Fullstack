@@ -165,7 +165,7 @@ export class ExcelFormulas {
             .plus(flotacion)
             .plus(cavali);
 
-        return totalPorcentajes.mul(valorComercial).toNumber();
+        return totalPorcentajes.mul(valorComercial).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toNumber();
     }
 
     /**
@@ -384,11 +384,11 @@ export class ExcelFormulas {
         cuota: number,
         prima: number
     ): number {
-        // Período 0: entrada de efectivo menos costes iniciales
+        // Período 0: entrada de efectivo más costes iniciales (sin redondeo)
         if (periodo === 0) {
             return new Decimal(valorComercial)
-                .minus(costesInicialesEmisor)
-                .toNumber();
+                .plus(costesInicialesEmisor)
+                .toNumber(); // No redondear aquí
         }
 
         // Períodos 1 a L7: cuota + prima

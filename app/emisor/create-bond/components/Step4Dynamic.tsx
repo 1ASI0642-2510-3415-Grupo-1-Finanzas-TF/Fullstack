@@ -132,8 +132,14 @@ export default function Step4Dynamic({ bondData, bondId }: Step4Props) {
                 }
             });
 
-            const inflacionAnual = parseFloat(bondData.step2?.inflacionAnual || '0') / 100;
-            const inflacionSerie = Array(numAnios).fill(inflacionAnual);
+            // Inflación: si no está indexado, array de ceros; si está indexado, array del valor ingresado
+            let inflacionSerie: number[];
+            if (bondData.step2?.indexadoInflacion) {
+                const inflacionAnual = parseFloat(bondData.step2?.inflacionAnual || '0') / 100;
+                inflacionSerie = Array(numAnios).fill(inflacionAnual);
+            } else {
+                inflacionSerie = Array(numAnios).fill(0);
+            }
 
             return {
                 valorNominal: parseFloat(bondData.step1?.valorNominal || '1000'),

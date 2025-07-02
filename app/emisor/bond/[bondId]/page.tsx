@@ -51,7 +51,7 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
     needsRecalculation,
     canCalculate,
     isLoadingStatus
-  } = useCalculations(resolvedParams.bondId, { 
+  } = useCalculations(resolvedParams.bondId, {
     autoCalculate: false, // DESACTIVADO para evitar bucle infinito
     onSuccess: (result) => {
       console.log('✅ Cálculos completados:', result)
@@ -93,8 +93,8 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(amount)
   }
 
