@@ -348,11 +348,13 @@ export class ExcelFormulas {
         periodo: number,
         totalPeriodos: number,
         primaPorcentaje: number,
-        valorNominal: number
+        //valorNominal: number,
+        bonoIndexado: number // Nuevo parámetro para el valor indexado
     ): number {
         if (periodo === totalPeriodos) {
+            // Usar valor indexado
             return new Decimal(primaPorcentaje)
-                .mul(valorNominal)
+                .mul(bonoIndexado)
                 .negated()
                 .toNumber();
         }
