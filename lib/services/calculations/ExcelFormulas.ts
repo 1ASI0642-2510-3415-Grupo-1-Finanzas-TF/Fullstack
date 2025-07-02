@@ -247,10 +247,11 @@ export class ExcelFormulas {
             return 0;
         }
 
-        // CORRECCIÓN: Con gracia total, el capital se mantiene
-        // (no se reduce porque no hay pagos)
         if (graciaAnterior === 'T') {
-            return bonoIndexadoAnterior;
+            // G[n−1] − H[n−1]: Como H[n−1] es negativo, esto suma el cupón (capitalización)
+            return new Decimal(bonoIndexadoAnterior)
+                .minus(cuponAnterior || 0)
+                .toNumber();
         } else {
             // Con gracia parcial o sin gracia: se reduce por amortización
             return new Decimal(bonoIndexadoAnterior)
