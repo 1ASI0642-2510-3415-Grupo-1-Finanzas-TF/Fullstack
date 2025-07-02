@@ -53,8 +53,8 @@ pnpm install
 Copia el ejemplo y actualiza:
 
 ```bash
-cp .env.example .env.local
-# Edita .env.local con tus credenciales y configuraciones
+cp .env.example .env
+# Edita .env con tus credenciales y configuraciones
 ```
 
 ### 4. Preparar Base de Datos

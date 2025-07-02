@@ -206,8 +206,8 @@ async function checkSystemRequirements() {
 }
 
 async function setupEnvironmentVariables(config: SetupConfig) {
-    console.log('⚙️ Configurando variables de entorno (.env.local)...\n');
-    const envLocalPath = '.env.local';
+    console.log('⚙️ Configurando variables de entorno (.env)...\n');
+    const envLocalPath = '.env';
     const envExamplePath = '.env.example';
 
     try {
@@ -221,7 +221,7 @@ async function setupEnvironmentVariables(config: SetupConfig) {
                 }
             }
             console.log(`ℹ️ ${envLocalPath} existente será sobrescrito (o usado si no se sobrescribe).`);
-        } catch { /* .env.local no existe, continuar */ }
+        } catch { /* .env no existe, continuar */ }
 
         // Usar `config.dbPassword` que ya maneja el default para autoMode o el input interactivo
         const databaseUrl = `postgresql://${config.dbUser}:${config.dbPassword}@${config.dbHost}:${config.dbPort}/${config.dbName}?schema=public`;
@@ -316,9 +316,9 @@ async function setupDatabase(config: SetupConfig) {
             }
         }
 
-        // Forzar carga de .env.local recién creado para los comandos de Prisma
+        // Forzar carga de .env recién creado para los comandos de Prisma
         // Esto es un hack. Sería mejor que Prisma CLI lo leyera directamente o usar dotenv-cli
-        // Pero dado que este script acaba de crear/actualizar .env.local, intentamos cargarlo.
+        // Pero dado que este script acaba de crear/actualizar .env, intentamos cargarlo.
         // Alternativamente, podrías requerir que el usuario lo cargue o reinicie la terminal.
         // Por simplicidad, continuamos asumiendo que Prisma CLI puede encontrar DATABASE_URL.
 
@@ -381,7 +381,7 @@ async function finalSetup() {
         console.log('🔍 Verificando configuración...');
         // Para verificar la conexión, DATABASE_URL debe estar disponible para el subproceso de prisma
         // El `echo ... | pnpm exec prisma db execute --stdin` es una forma.
-        // Asegúrate que el DATABASE_URL de .env.local sea leído por `pnpm exec prisma`.
+        // Asegúrate que el DATABASE_URL de .env sea leído por `pnpm exec prisma`.
         console.log('   Verificando conexión a BD con Prisma...');
         await execAsync('echo "SELECT 1 as test;" | pnpm exec prisma db execute --stdin');
         console.log('✅ Conexión a base de datos OK.');
