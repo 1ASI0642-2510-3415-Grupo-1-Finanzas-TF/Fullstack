@@ -72,12 +72,15 @@ export default function InvestBondWizard() {
     }
   }, [bondDetails])
 
-  // Datos calculados basados en el bono real
+// Datos calculados basados en el bono real
+  const flotation = bondDetails?.commercialPrice ? bondDetails.commercialPrice * 0.0035 : 0;
+  const cavali = bondDetails?.commercialPrice ? bondDetails.commercialPrice * 0.0050 : 0;
+
   const investmentCosts: InvestmentCosts = {
-    flotation: bondDetails && bondDetails.commercialPrice ? (bondDetails.commercialPrice * 0.0075) : 0,
-    cavali: bondDetails && bondDetails.commercialPrice ? (bondDetails.commercialPrice * 0.0021) : 0,
-    total: bondDetails && bondDetails.commercialPrice ? (bondDetails.commercialPrice * 0.0098) : 0,
-  }
+    flotation,
+    cavali,
+    total: flotation + cavali,
+  };
 
   const totalDisbursement = bondDetails && bondDetails.commercialPrice ? (bondDetails.commercialPrice + investmentCosts.total) : 0
 
