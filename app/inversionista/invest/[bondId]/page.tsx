@@ -72,9 +72,9 @@ export default function InvestBondWizard() {
     }
   }, [bondDetails])
 
-// Datos calculados basados en el bono real
-  const flotation = bondDetails?.commercialPrice ? bondDetails.commercialPrice * 0.0035 : 0;
-  const cavali = bondDetails?.commercialPrice ? bondDetails.commercialPrice * 0.0050 : 0;
+  // Datos calculados basados en el bono real
+  const flotation = bondDetails?.commercialPrice ? (bondDetails.costs?.flotation || 0) : 0;
+  const cavali = bondDetails?.commercialPrice ? (bondDetails.costs?.cavali || 0) : 0;
 
   const investmentCosts: InvestmentCosts = {
     flotation,
