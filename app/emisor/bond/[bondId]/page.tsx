@@ -530,7 +530,7 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
                       </div>
                       <div className="bg-[#1E1E1E] rounded-lg p-4">
                         <p className="text-gray-400 text-xs mb-1">VAN Emisor</p>
-                        <p className="text-[#39FF14] font-medium text-lg">{formatCurrency(vanEmisor)}</p>
+                        <p className="text-[#39FF14] font-medium text-lg">{formatCurrency(-vanEmisor)}</p>
                       </div>
                       <div className="bg-[#1E1E1E] rounded-lg p-4">
                         <p className="text-gray-400 text-xs mb-1">Duración</p>
