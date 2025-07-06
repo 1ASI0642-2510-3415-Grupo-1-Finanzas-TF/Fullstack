@@ -331,6 +331,10 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
   const convexidad = metricas?.convexidad || 0
   const duracionModificada = metricas?.duracionModificada || 0
 
+  // Calcular precio del bono: VAN Emisor - flujo inicial (período 0)
+  const flujoInicial = flows.length > 0 ? flows.find(flow => flow.periodo === 0)?.flujoEmisor || 0 : 0
+  const precioBono = hasFlowsData && vanEmisor !== 0 ? - vanEmisor - flujoInicial : bond?.valorComercial || 0
+
   return (
       <div className="min-h-screen bg-[#0D0D0D] text-white">
         {/* Header */}
@@ -521,8 +525,8 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
                     <h2 className="text-xl font-semibold mb-6">Indicadores Clave (Emisor)</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="bg-[#1E1E1E] rounded-lg p-4">
-                        <p className="text-gray-400 text-xs mb-1">Precio Neto Recibido Emisor</p>
-                        <p className="text-[#39FF14] font-medium text-lg">{formatCurrency(bond?.valorComercial)}</p>
+                        <p className="text-gray-400 text-xs mb-1">Precio Bono</p>
+                        <p className="text-[#39FF14] font-medium text-lg">{formatCurrency(precioBono)}</p>
                       </div>
                       <div className="bg-[#1E1E1E] rounded-lg p-4">
                         <p className="text-gray-400 text-xs mb-1">VAN Emisor</p>
