@@ -280,7 +280,7 @@ export class FinancialCalculator {
             periodo,
             intermedios.totalPeriodos,
             inputs.primaPorcentaje,
-            inputs.valorNominal
+            bonoIndexado //Cuando hay PGT: Los intereses se capitalizan formando un nuevo capital indexado: Capital * (1 + TEP)
         );
 
         // L[n]: Escudo fiscal

@@ -165,7 +165,7 @@ export class ExcelFormulas {
             .plus(flotacion)
             .plus(cavali);
 
-        return totalPorcentajes.mul(valorComercial).toNumber();
+        return totalPorcentajes.mul(valorComercial).toDecimalPlaces(2, Decimal.ROUND_HALF_UP).toNumber();
     }
 
     /**
@@ -247,10 +247,11 @@ export class ExcelFormulas {
             return 0;
         }
 
-        // CORRECCIÓN: Con gracia total, el capital se mantiene
-        // (no se reduce porque no hay pagos)
         if (graciaAnterior === 'T') {
-            return bonoIndexadoAnterior;
+            // G[n−1] − H[n−1]: Como H[n−1] es negativo, esto suma el cupón (capitalización)
+            return new Decimal(bonoIndexadoAnterior)
+                .minus(cuponAnterior || 0)
+                .toNumber();
         } else {
             // Con gracia parcial o sin gracia: se reduce por amortización
             return new Decimal(bonoIndexadoAnterior)
@@ -347,11 +348,13 @@ export class ExcelFormulas {
         periodo: number,
         totalPeriodos: number,
         primaPorcentaje: number,
-        valorNominal: number
+        //valorNominal: number,
+        bonoIndexado: number // Nuevo parámetro para el valor indexado
     ): number {
         if (periodo === totalPeriodos) {
+            // Usar valor indexado
             return new Decimal(primaPorcentaje)
-                .mul(valorNominal)
+                .mul(bonoIndexado)
                 .negated()
                 .toNumber();
         }
@@ -384,11 +387,11 @@ export class ExcelFormulas {
         cuota: number,
         prima: number
     ): number {
-        // Período 0: entrada de efectivo menos costes iniciales
+        // Período 0: entrada de efectivo más costes iniciales (sin redondeo)
         if (periodo === 0) {
             return new Decimal(valorComercial)
-                .minus(costesInicialesEmisor)
-                .toNumber();
+                .plus(costesInicialesEmisor)
+                .toNumber(); // No redondear aquí
         }
 
         // Períodos 1 a L7: cuota + prima

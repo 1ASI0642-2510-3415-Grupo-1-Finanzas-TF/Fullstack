@@ -98,14 +98,23 @@ export default function RegisterPage() {
 
     setIsLoading(true)
     try {
+      console.log('Enviando datos de registro:', { email: formData.email, password: formData.password })
+      
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: formData.email, password: formData.password })
       })
+      
+      console.log('Respuesta del servidor:', res.status, res.statusText)
+      
       const data = await res.json()
+      console.log('Datos de respuesta:', data)
+      
       if (!res.ok) {
-        setToast({ show: true, message: data.error || 'Registro fallido', type: 'error' })
+        const errorMessage = data.error || data.details || 'Registro fallido'
+        console.error('Error en registro:', errorMessage)
+        setToast({ show: true, message: errorMessage, type: 'error' })
         setIsLoading(false)
         return
       }
@@ -115,7 +124,8 @@ export default function RegisterPage() {
         router.push('/auth/role-selection')
       }, 1500)
     } catch (error) {
-      setToast({ show: true, message: 'Registro fallido', type: 'error' })
+      console.error('Error de red:', error)
+      setToast({ show: true, message: 'Error de conexión. Intenta nuevamente.', type: 'error' })
       setIsLoading(false)
     }
   }

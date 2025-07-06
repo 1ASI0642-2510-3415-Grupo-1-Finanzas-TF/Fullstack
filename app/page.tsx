@@ -9,9 +9,13 @@ export default function HomePage() {
   useEffect(() => {
     // Check if user is already logged in
     const userRole = localStorage.getItem("userRole")
-    if (userRole) {
+    const token = document.cookie.includes('token=')
+    
+    if (userRole && token) {
       router.push(userRole === "emisor" ? "/emisor/dashboard" : "/inversionista/dashboard")
     } else {
+      // Limpiar datos obsoletos
+      localStorage.removeItem("userRole")
       router.push("/auth/login")
     }
   }, [router])

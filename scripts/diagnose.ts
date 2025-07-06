@@ -22,7 +22,7 @@ async function runDiagnosis() {
 
     if (!envOk) {
         console.log('\n❌ Faltan variables de entorno críticas');
-        console.log('💡 Copia .env.example a .env.local y configura las variables');
+        console.log('💡 Copia .env.example a .env y configura las variables');
         return;
     }
 

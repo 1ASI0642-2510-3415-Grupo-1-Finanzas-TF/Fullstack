@@ -12,7 +12,7 @@
 
 // Cargar variables de entorno
 import { config } from 'dotenv';
-config({ path: '.env.local' });
+config({ path: '.env' });
 
 import { PrismaClient } from '../lib/generated/client';
 
