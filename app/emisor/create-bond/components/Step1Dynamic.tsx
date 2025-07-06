@@ -218,15 +218,16 @@ export default function Step1Dynamic({ bondData, saveDataAction }: Step1Props) {
                     <select
                         value={formData.frecuenciaCupon}
                         onChange={(e) => handleChange('frecuenciaCupon', e.target.value)}
-                        className="w-full bg-transparent text-white border border-[#2A2A2A] rounded-lg px-4 py-3 focus:outline-none focus:border-[#39FF14] focus:shadow-[0_0_8px_rgba(57,255,20,0.47)] transition"
+                        className="w-full bg-[#111] text-white border border-[#2A2A2A] rounded-lg px-4 py-3 focus:outline-none focus:border-[#39FF14] focus:shadow-[0_0_8px_rgba(57,255,20,0.47)] transition"
                     >
+                        <option value="anual">Anual</option>
                         <option value="mensual">Mensual</option>
                         <option value="bimestral">Bimestral</option>
                         <option value="trimestral">Trimestral</option>
                         <option value="cuatrimestral">Cuatrimestral</option>
                         <option value="semestral">Semestral</option>
-                        <option value="anual">Anual</option>
                     </select>
+
                 </div>
 
                 {/* Base de Días */}
@@ -234,15 +235,14 @@ export default function Step1Dynamic({ bondData, saveDataAction }: Step1Props) {
                     <label className="block text-[#AAAAAA] text-sm mb-2">
                         Base de Días
                     </label>
-                    <select
-                        value={formData.diasPorAno}
-                        onChange={(e) => handleChange('diasPorAno', e.target.value)}
-                        className="w-full bg-transparent text-white border border-[#2A2A2A] rounded-lg px-4 py-3 focus:outline-none focus:border-[#39FF14] focus:shadow-[0_0_8px_rgba(57,255,20,0.47)] transition"
-                    >
-                        <option value="360">360 días</option>
-                        <option value="365">365 días</option>
-                    </select>
+                    <input
+                        type="text"
+                        value="360 días"
+                        readOnly
+                        className="w-full bg-[#111111] text-white border border-[#2A2A2A] rounded-lg px-4 py-3"
+                    />
                 </div>
+
             </div>
 
             {/* Información Calculada */}
