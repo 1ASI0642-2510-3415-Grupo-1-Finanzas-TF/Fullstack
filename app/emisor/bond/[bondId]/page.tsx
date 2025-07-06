@@ -594,23 +594,21 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
                 </div>
 
                 {hasFlowsData ? (
-                    <div className="relative overflow-x-auto">
+                    <div className="w-full overflow-x-auto">
                       <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#151515] to-transparent pointer-events-none z-10"></div>
-                      <table className="w-full border-collapse min-w-[1200px]">
+                      <table className="min-w-full border-collapse">
                         <thead>
                         <tr className="bg-[#1A1A1A] text-gray-400 text-xs">
-                          <th className="py-2 px-3 text-center font-medium sticky left-0 bg-[#1A1A1A] z-10">Nº</th>
-                          <th className="py-2 px-3 text-left font-medium">Fecha</th>
-                          <th className="py-2 px-3 text-right font-medium">Infl. Anual</th>
-                          <th className="py-2 px-3 text-right font-medium">Infl. Sem.</th>
-                          <th className="py-2 px-3 text-center font-medium">P. Gracia</th>
-                          <th className="py-2 px-3 text-right font-medium">Bono Indexado</th>
-                          <th className="py-2 px-3 text-right font-medium">Cupón (Int.)</th>
-                          <th className="py-2 px-3 text-right font-medium">Amort.</th>
-                          <th className="py-2 px-3 text-right font-medium">Prima</th>
-                          <th className="py-2 px-3 text-right font-medium">Escudo</th>
-                          <th className="py-2 px-3 text-right font-medium">Flujo Emisor</th>
-                          <th className="py-2 px-3 text-right font-medium">Flujo Emisor c/Escudo</th>
+                          <th className="py-2 px-2 text-center font-medium sticky left-0 bg-[#1A1A1A] z-10">Nº</th>
+                          <th className="py-2 px-2 text-left font-medium">Fecha</th>
+                          <th className="py-2 px-2 text-center font-medium">P. Gracia</th>
+                          <th className="py-2 px-2 text-right font-medium">Bono Indexado</th>
+                          <th className="py-2 px-2 text-right font-medium">Cupón (Int.)</th>
+                          <th className="py-2 px-2 text-right font-medium">Amort.</th>
+                          <th className="py-2 px-2 text-right font-medium">Prima</th>
+                          <th className="py-2 px-2 text-right font-medium">Escudo</th>
+                          <th className="py-2 px-2 text-right font-medium">Flujo Emisor</th>
+                          <th className="py-2 px-2 text-right font-medium">Flujo Emisor c/Escudo</th>
                         </tr>
                         </thead>
                         <tbody className="text-sm">
@@ -619,36 +617,30 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
                               <td className="py-2 px-3 text-center sticky left-0 bg-[#151515] hover:bg-[#1E1E1E] z-10">
                                 {flow.periodo}
                               </td>
-                              <td className="py-2 px-3 text-left">{formatDate(flow.fecha)}</td>
-                              <td className="py-2 px-3 text-right">
-                                {flow.inflacionAnual !== null ? `${flow.inflacionAnual.toFixed(2)}%` : "-"}
-                              </td>
-                              <td className="py-2 px-3 text-right">
-                                {flow.inflacionSemestral !== null ? `${flow.inflacionSemestral.toFixed(3)}%` : "-"}
-                              </td>
-                              <td className="py-2 px-3 text-center">{flow.periodoGracia || "-"}</td>
-                              <td className="py-2 px-3 text-right">
+                              <td className="py-2 px-2 text-left">{formatDate(flow.fecha)}</td>
+                              <td className="py-2 px-2 text-center">{flow.periodoGracia || "-"}</td>
+                              <td className="py-2 px-2 text-right">
                                 {flow.bonoIndexado !== null ? formatCurrency(flow.bonoIndexado) : "-"}
                               </td>
-                              <td className={`py-2 px-3 text-right ${flow.cupon && flow.cupon < 0 ? "text-red-500" : ""}`}>
+                              <td className={`py-2 px-2 text-right ${flow.cupon && flow.cupon < 0 ? "text-red-500" : ""}`}>
                                 {flow.cupon !== null ? formatCurrency(flow.cupon) : "-"}
                               </td>
-                              <td className={`py-2 px-3 text-right ${flow.amortizacion && flow.amortizacion < 0 ? "text-red-500" : ""}`}>
+                              <td className={`py-2 px-2 text-right ${flow.amortizacion && flow.amortizacion < 0 ? "text-red-500" : ""}`}>
                                 {flow.amortizacion !== null ? formatCurrency(flow.amortizacion) : "-"}
                               </td>
-                              <td className={`py-2 px-3 text-right ${flow.prima && flow.prima < 0 ? "text-red-500" : ""}`}>
+                              <td className={`py-2 px-2 text-right ${flow.prima && flow.prima < 0 ? "text-red-500" : ""}`}>
                                 {flow.prima !== null ? formatCurrency(flow.prima) : "-"}
                               </td>
-                              <td className={`py-2 px-3 text-right ${flow.escudoFiscal && flow.escudoFiscal > 0 ? "text-green-500" : ""}`}>
+                              <td className={`py-2 px-2 text-right ${flow.escudoFiscal && flow.escudoFiscal > 0 ? "text-green-500" : ""}`}>
                                 {flow.escudoFiscal !== null ? formatCurrency(flow.escudoFiscal) : "-"}
                               </td>
-                              <td className={`py-2 px-3 text-right ${
+                              <td className={`py-2 px-2 text-right ${
                                   flow.flujoEmisor && flow.flujoEmisor > 0 ? "text-green-500" :
                                       flow.flujoEmisor && flow.flujoEmisor < 0 ? "text-red-500" : ""
                               }`}>
                                 {flow.flujoEmisor !== null ? formatCurrency(flow.flujoEmisor) : "-"}
                               </td>
-                              <td className={`py-2 px-3 text-right ${
+                              <td className={`py-2 px-2 text-right ${
                                   flow.flujoEmisorConEscudo && flow.flujoEmisorConEscudo > 0 ? "text-green-500" :
                                       flow.flujoEmisorConEscudo && flow.flujoEmisorConEscudo < 0 ? "text-red-500" : ""
                               }`}>
