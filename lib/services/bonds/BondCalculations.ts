@@ -128,6 +128,7 @@ export class BondCalculationsService {
         // ✅ NUEVA VALIDACIÓN: Detectar datos corruptos (caracteres '[')
         const hasCorruptInflacion = calculationInputs.inflacionSerie.some(item => {
             if (typeof item === 'string') {
+                // @ts-ignore
                 return item.includes('[');
             }
             return false;

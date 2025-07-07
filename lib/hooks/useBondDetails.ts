@@ -141,7 +141,7 @@ export function useBondDetails(bondId: string) {
           isinCode: bondData.bond.codigoIsin,
           issuerName: bondData.bond.emisor?.companyName || 'No especificado',
           issuerIndustry: 'No especificado', // No está en el endpoint
-          currency: 'USD', // Cambiar a USD como en el emisor
+          currency: bondData.bond.currency || 'USD', // Asumir USD si no está especificado
           nominalValue: bondData.bond.valorNominal,
           commercialPrice: bondData.bond.valorComercial,
           issueDate: bondData.bond.fechaEmision.split('T')[0],

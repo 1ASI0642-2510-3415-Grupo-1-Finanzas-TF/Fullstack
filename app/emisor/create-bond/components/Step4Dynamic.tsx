@@ -71,7 +71,10 @@ export default function Step4Dynamic({ bondData, bondId }: Step4Props) {
         calculationError
     } = useCalculations(bondId ?? undefined, {
         autoCalculate: true, // Auto-calcular si el bono ya existe
-        onSuccess: (result) => console.log('✅ Cálculos en Step4 completados:', result),
+        onSuccess: (result) => {
+            console.log('✅ Cálculos completos:', result);
+            console.log('📊 Métricas emisor:', result?.metricas?.emisor);
+            console.log('📊 Métricas bonista:', result?.metricas?.bonista);
         onError: (error) => console.error('❌ Error en cálculos de Step4:', error)
     });
 
@@ -171,7 +174,7 @@ export default function Step4Dynamic({ bondData, bondId }: Step4Props) {
     const formatCurrency = (amount: string | number | null | undefined) => {
         return new Intl.NumberFormat("en-US", {
             style: "currency",
-            currency: "USD",
+            currency: "PEN",
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         }).format(typeof amount === 'string' ? parseFloat(amount) : amount || 0);
@@ -473,8 +476,13 @@ export default function Step4Dynamic({ bondData, bondId }: Step4Props) {
                                             </p>
                                         </div>
                                         <div className="bg-[#1E1E1E] rounded-lg px-6 py-4">
-                                            <p className="text-gray-400 text-xs mb-1">TREA Bonista</p>
-                                            <p className="text-blue-400 font-medium text-lg">{formatPercent(metricasBonista?.treaBonista || 0)}</p>
+                                            <p className="text-gray-400 text-xs mb-1">TREA Inversor</p>
+                                            <p className="text-blue-400 font-medium text-lg">
+                                                {metricasBonista?.treaBonista === 0 ?
+                                                    "⚠️ TREA: 0.000%" :
+                                                    formatPercent(metricasBonista?.treaBonista || 0)
+                                                }
+                                            </p>
                                         </div>
                                     </div>
                                 </div>

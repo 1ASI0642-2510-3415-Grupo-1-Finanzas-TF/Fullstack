@@ -687,7 +687,7 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
                           <p className="text-[#39FF14] font-medium text-xl">{formatCurrency(vanEmisor)}</p>
                         </div>
                         <div className="bg-[#1E1E1E] rounded-lg p-4">
-                          <p className="text-gray-400 text-sm mb-1">TIR Emisor (bruta)</p>
+                          <p className="text-gray-400 text-sm mb-1">TIR Emisor (TCEA)</p>
                           <p className="text-[#39FF14] font-medium text-xl">{formatPercent(metricas?.tcea)}</p>
                         </div>
                         <div className="bg-[#1E1E1E] rounded-lg p-4">

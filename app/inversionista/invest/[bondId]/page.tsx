@@ -27,17 +27,12 @@ interface InvestmentCosts {
 interface FlowProjection {
   period: number
   date: string
-  inflationAnnual: number
-  inflationSemestral: number
-  gracePeriod: boolean
+  gracePeriod: string | null
   indexedBond: number
   coupon: number
-  amortization: number
   premium: number
-  investorFlow: number
-  actualizedFlow: number
-  flowTimePlazo: number
-  convexityFactor: number
+  amortization: number
+  investorFlow: number | null;
 }
 
 interface KPIs {
@@ -86,87 +81,93 @@ export default function InvestBondWizard() {
 
   const kpis: KPIs = {
     estimatedTREA: bondDetails?.estimatedTREA || 0,
-    duration: 4.23, // Esto debería calcularse dinámicamente
-    convexity: 21.45, // Esto debería calcularse dinámicamente
+    duration: bondDetails?.duration || 0,
+    convexity: bondDetails?.convexity || 0,
     estimatedVAN: bondDetails && bondDetails.nominalValue ? (bondDetails.nominalValue * 1.12467) : 0,
   }
 
-  // Flujos de caja simulados - en una implementación real, esto vendría del endpoint de cálculos
+  // ... Función para formatear fechas
+  const formatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return "N/A"
+    try {
+      const date = new Date(dateString)
+      if (isNaN(date.getTime())) return "N/A"
+      return date.toLocaleDateString("es-ES", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      })
+    } catch {
+      return "N/A"
+    }
+  }
+
+  // Flujos de caja simulados
   const flowProjections: FlowProjection[] = bondDetails ? [
     {
       period: 0,
-      date: bondDetails.issueDate,
-      inflationAnnual: 0,
-      inflationSemestral: 0,
-      gracePeriod: false,
+      date: formatDate(bondDetails.issueDate),
+      gracePeriod: bondDetails.flows[0].gracePeriod,
       indexedBond: 0,
       coupon: 0,
-      amortization: 0,
       premium: 0,
-      investorFlow: -(bondDetails.commercialPrice + investmentCosts.total),
-      actualizedFlow: -(bondDetails.commercialPrice + investmentCosts.total),
-      flowTimePlazo: 0,
-      convexityFactor: 0,
+      amortization: 0,
+      investorFlow: -(bondDetails.commercialPrice + investmentCosts.total)
     },
     {
       period: 1,
-      date: "15/11/2023",
-      inflationAnnual: bondDetails.inflationRate || 3.2,
-      inflationSemestral: (bondDetails.inflationRate || 3.2) / 2,
-      gracePeriod: false,
-      indexedBond: bondDetails.nominalValue * 1.0158,
-      coupon: (bondDetails.nominalValue * 1.0158 * bondDetails.couponRate) / 100,
-      amortization: 0,
+      date: formatDate(bondDetails.flows[1].date),
+      gracePeriod: bondDetails.flows[1].investorFlow === undefined ? 'T' : bondDetails.flows[1].gracePeriod,
+      indexedBond: bondDetails.nominalValue,
+      coupon: (bondDetails.nominalValue * bondDetails.couponRate),
       premium: 0,
-      investorFlow: (bondDetails.nominalValue * 1.0158 * bondDetails.couponRate) / 100,
-      actualizedFlow: ((bondDetails.nominalValue * 1.0158 * bondDetails.couponRate) / 100) * 0.963,
-      flowTimePlazo: 17.74,
-      convexityFactor: 8.87,
+      amortization: 0,
+      investorFlow: bondDetails.flows[1].investorFlow?? 0
     },
     {
       period: 2,
-      date: "15/05/2024",
-      inflationAnnual: bondDetails.inflationRate || 3.2,
-      inflationSemestral: (bondDetails.inflationRate || 3.2) / 2,
-      gracePeriod: false,
-      indexedBond: bondDetails.nominalValue * 1.03186,
-      coupon: (bondDetails.nominalValue * 1.03186 * bondDetails.couponRate) / 100,
+      date: formatDate(bondDetails.flows[2].date),
+      gracePeriod:
+          bondDetails.flows[1].investorFlow === undefined &&
+          bondDetails.flows[2].investorFlow !== undefined
+              ? 'P'
+              : bondDetails.flows[1].gracePeriod,
+      indexedBond: bondDetails.nominalValue + bondDetails.nominalValue * bondDetails.couponRate,
+      coupon: (bondDetails.nominalValue + ( bondDetails.nominalValue * bondDetails.couponRate)) * bondDetails.couponRate,
+      premium: bondDetails.flows[2].premium ?? 0,
       amortization: 0,
-      premium: 0,
-      investorFlow: (bondDetails.nominalValue * 1.03186 * bondDetails.couponRate) / 100,
-      actualizedFlow: ((bondDetails.nominalValue * 1.03186 * bondDetails.couponRate) / 100) * 0.928,
-      flowTimePlazo: 34.75,
-      convexityFactor: 34.75,
+      investorFlow: bondDetails.flows[2].investorFlow?? 0
     },
     {
       period: 3,
-      date: "15/11/2024",
-      inflationAnnual: bondDetails.inflationRate || 3.2,
-      inflationSemestral: (bondDetails.inflationRate || 3.2) / 2,
-      gracePeriod: false,
-      indexedBond: bondDetails.nominalValue * 1.04817,
-      coupon: (bondDetails.nominalValue * 1.04817 * bondDetails.couponRate) / 100,
+      date: formatDate(bondDetails.flows[3].date),
+      gracePeriod: bondDetails.flows[3].gracePeriod,
+      indexedBond:  bondDetails.nominalValue + bondDetails.nominalValue * bondDetails.couponRate,
+      coupon: (bondDetails.nominalValue + ( bondDetails.nominalValue * bondDetails.couponRate)) * bondDetails.couponRate,
+      premium: bondDetails.flows[3].premium ?? 0,
       amortization: 0,
-      premium: 0,
-      investorFlow: (bondDetails.nominalValue * 1.04817 * bondDetails.couponRate) / 100,
-      actualizedFlow: ((bondDetails.nominalValue * 1.04817 * bondDetails.couponRate) / 100) * 0.896,
-      flowTimePlazo: 51.08,
-      convexityFactor: 76.61,
+      investorFlow: bondDetails.flows[3].investorFlow?? 0
     },
     {
-      period: 10,
-      date: bondDetails.maturityDate,
-      inflationAnnual: bondDetails.inflationRate || 3.2,
-      inflationSemestral: (bondDetails.inflationRate || 3.2) / 2,
-      gracePeriod: false,
-      indexedBond: bondDetails.nominalValue * 1.17385,
-      coupon: (bondDetails.nominalValue * 1.17385 * bondDetails.couponRate) / 100,
-      amortization: bondDetails.nominalValue * 1.17385,
-      premium: bondDetails.nominalValue * 1.17385 * (bondDetails.maturityPremium / 100),
-      investorFlow: bondDetails.nominalValue * 1.17385 * (1 + bondDetails.couponRate / 100 + bondDetails.maturityPremium / 100),
-      actualizedFlow: bondDetails.nominalValue * 1.17385 * (1 + bondDetails.couponRate / 100 + bondDetails.maturityPremium / 100) * 0.814,
-      flowTimePlazo: 4776.9,
-      convexityFactor: 23884.5,
+      period: 4,
+      date: formatDate(bondDetails.flows[4].date),
+      gracePeriod: bondDetails.flows[4].gracePeriod,
+      indexedBond:  bondDetails.nominalValue + bondDetails.nominalValue * bondDetails.couponRate,
+      coupon: (bondDetails.nominalValue + ( bondDetails.nominalValue * bondDetails.couponRate)) * bondDetails.couponRate,
+      premium: bondDetails.flows[4].premium ?? 0,
+      amortization: 0,
+      investorFlow: bondDetails.flows[4].investorFlow?? 0
+    },
+    {
+      period: 5,
+      date: formatDate(bondDetails.maturityDate),
+      gracePeriod: bondDetails.flows[5].gracePeriod,
+      indexedBond:  bondDetails.nominalValue + bondDetails.nominalValue * bondDetails.couponRate,
+      coupon: (bondDetails.nominalValue + ( bondDetails.nominalValue * bondDetails.couponRate)) * bondDetails.couponRate,
+      premium: bondDetails.flows[5].premium ?? 0,
+      amortization: 0,
+      // Continuar con el flujo de caja del inversionista
+      investorFlow: bondDetails.flows[5].investorFlow?? 0
     },
   ] : []
 
@@ -356,9 +357,9 @@ export default function InvestBondWizard() {
                       </div>
 
                       <div className="flex flex-col">
-                        <span className="text-[#AAAAAA] text-sm">Emisor / Moneda</span>
+                        <span className="text-[#AAAAAA] text-sm">Emisor </span>
                         <span className="font-medium">
-                          {bondDetails.issuerName} / {bondDetails.currency}
+                          {bondDetails.issuerName}
                         </span>
                       </div>
 
@@ -490,11 +491,6 @@ export default function InvestBondWizard() {
                           <span className="text-[#AAAAAA] text-sm">Convexidad:</span>
                           <span className="font-medium">{kpis.convexity}</span>
                         </div>
-
-                        <div className="flex justify-between items-center">
-                          <span className="text-[#AAAAAA] text-sm">VAN Estimado:</span>
-                          <span className="font-medium">{formatCurrency(kpis.estimatedVAN)}</span>
-                        </div>
                       </div>
                     </div>
                   </div>
@@ -545,17 +541,12 @@ export default function InvestBondWizard() {
                           <tr className="border-b border-[#2A2A2A]">
                             <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Período</th>
                             <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Fecha</th>
-                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Inflación Anual</th>
-                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Inflación Semestral</th>
                             <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Período de Gracia</th>
                             <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Bono Indexado</th>
                             <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Cupón</th>
-                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Amortización</th>
                             <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Prima</th>
+                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Amortización</th>
                             <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Flujo Inversionista</th>
-                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Flujo Actualizado</th>
-                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Flujo × Tiempo</th>
-                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Factor Convexidad</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -563,17 +554,12 @@ export default function InvestBondWizard() {
                             <tr key={flow.period} className="border-b border-[#2A2A2A] hover:bg-[#1A1A1A]">
                               <td className="px-4 py-2 text-sm">{flow.period}</td>
                               <td className="px-4 py-2 text-sm">{flow.date}</td>
-                              <td className="px-4 py-2 text-sm">{flow.inflationAnnual}%</td>
-                              <td className="px-4 py-2 text-sm">{flow.inflationSemestral}%</td>
-                              <td className="px-4 py-2 text-sm">{flow.gracePeriod ? "Sí" : "No"}</td>
-                              <td className="px-4 py-2 text-sm">{formatCurrency(flow.indexedBond)}</td>
-                              <td className="px-4 py-2 text-sm">{formatCurrency(flow.coupon)}</td>
-                              <td className="px-4 py-2 text-sm">{formatCurrency(flow.amortization)}</td>
-                              <td className="px-4 py-2 text-sm">{formatCurrency(flow.premium)}</td>
-                              <td className="px-4 py-2 text-sm">{formatCurrency(flow.investorFlow)}</td>
-                              <td className="px-4 py-2 text-sm">{formatCurrency(flow.actualizedFlow)}</td>
-                              <td className="px-4 py-2 text-sm">{formatCurrency(flow.flowTimePlazo)}</td>
-                              <td className="px-4 py-2 text-sm">{formatCurrency(flow.convexityFactor)}</td>
+                              <td className="px-4 py-2 text-sm">{flow.gracePeriod ?? "-"}</td>
+                              <td className="px-4 py-2 text-sm">{formatCurrency(flow.indexedBond ?? "-")}</td>
+                              <td className="px-4 py-2 text-sm">{formatCurrency(flow.coupon ?? "-")}</td>
+                              <td className="px-4 py-2 text-sm">{formatCurrency(flow.premium) ?? "-"}</td>
+                              <td className="px-4 py-2 text-sm">{ formatCurrency(flow.amortization ?? "-")}</td>
+                              <td className="px-4 py-2 text-sm">{formatCurrency(flow.investorFlow?? 0)}</td>
                             </tr>
                           ))}
                         </tbody>
