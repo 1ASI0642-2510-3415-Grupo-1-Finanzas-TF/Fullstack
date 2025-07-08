@@ -171,7 +171,7 @@ export default function Step4Dynamic({ bondData, bondId }: Step4Props) {
     const formatCurrency = (amount: string | number | null | undefined) => {
         return new Intl.NumberFormat("en-US", {
             style: "currency",
-            currency: "USD",
+            currency: "$",
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         }).format(typeof amount === 'string' ? parseFloat(amount) : amount || 0);
@@ -292,15 +292,11 @@ export default function Step4Dynamic({ bondData, bondId }: Step4Props) {
                                 </div>
                                 <div>
                                     <label className="text-gray-400 text-sm">Tasa de Descuento</label>
-                                    <p className="text-white font-medium">{bondData.step2?.tasaDescuento || "0"}%</p>
+                                    <p className="text-white font-medium">{bondData.step2?.tasaDescuento || "4.50"}%</p>
                                 </div>
                                 <div>
                                     <label className="text-gray-400 text-sm">Prima de Vencimiento</label>
                                     <p className="text-white font-medium">{bondData.step2?.primaVencimiento || "0"}%</p>
-                                </div>
-                                <div>
-                                    <label className="text-gray-400 text-sm">Impuesto a la Renta</label>
-                                    <p className="text-white font-medium">{bondData.step2?.impuestoRenta || "30"}%</p>
                                 </div>
                                 <div>
                                     <label className="text-gray-400 text-sm">Indexado a Inflación</label>
@@ -457,10 +453,6 @@ export default function Step4Dynamic({ bondData, bondId }: Step4Props) {
                                             <p className="text-[#39FF14] font-medium text-lg">{formatPercent(metricas?.tceaEmisor || 0)}</p>
                                         </div>
                                         <div className="bg-[#1E1E1E] rounded-lg px-6 py-4">
-                                            <p className="text-gray-400 text-xs mb-1">TCEA Emisor (c/Escudo)</p>
-                                            <p className="text-[#39FF14] font-medium text-lg">{formatPercent(metricas?.tceaEmisorConEscudo || 0)}</p>
-                                        </div>
-                                        <div className="bg-[#1E1E1E] rounded-lg px-6 py-4">
                                             <p className="text-gray-400 text-xs mb-1">Duración</p>
                                             <p className="text-[#39FF14] font-medium text-lg">
                                                 {metricas?.duracion ? `${metricas.duracion.toFixed(2)} años` : "N/A"}
@@ -473,8 +465,13 @@ export default function Step4Dynamic({ bondData, bondId }: Step4Props) {
                                             </p>
                                         </div>
                                         <div className="bg-[#1E1E1E] rounded-lg px-6 py-4">
-                                            <p className="text-gray-400 text-xs mb-1">TREA Bonista</p>
-                                            <p className="text-blue-400 font-medium text-lg">{formatPercent(metricasBonista?.treaBonista || 0)}</p>
+                                            <p className="text-gray-400 text-xs mb-1">TREA Inversor</p>
+                                            <p className="text-blue-400 font-medium text-lg">
+                                                {metricasBonista?.treaBonista === 0 ?
+                                                    "⚠️ TREA: 0.000%" :
+                                                    formatPercent(metricasBonista?.treaBonista || 0)
+                                                }
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -575,7 +572,7 @@ export default function Step4Dynamic({ bondData, bondId }: Step4Props) {
                                                     </span>
                                                 </div>
                                                 <div className="flex justify-between">
-                                                    <span className="text-sm text-gray-300">TREA Bonista:</span>
+                                                    <span className="text-sm text-gray-300">TREA Inversor:</span>
                                                     <span className="text-sm text-blue-400">
                                                         {formatPercent(metricasBonista?.treaBonista || 0)}
                                                     </span>

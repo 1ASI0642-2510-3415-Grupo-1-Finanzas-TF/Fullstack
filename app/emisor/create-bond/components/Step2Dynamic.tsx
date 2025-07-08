@@ -259,21 +259,6 @@ export default function Step2Dynamic({ bondData, saveDataAction }: Step2Props) {
                             <Percent className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-500" size={16} />
                         </div>
                     </div>
-
-                    {/* Impuesto a la Renta */}
-                    <div>
-                        <label className="block text-[#AAAAAA] text-sm mb-2">Impuesto a la renta (%)</label>
-                        <div className="relative">
-                            <input
-                                type="number"
-                                value={formData.impuestoRenta}
-                                onChange={(e) => handleChange('impuestoRenta', e.target.value)}
-                                className="w-full bg-transparent text-white border border-[#2A2A2A] rounded-lg px-4 py-3 focus:outline-none focus:border-[#39FF14] focus:shadow-[0_0_8px_rgba(57,255,20,0.47)] transition"
-                                step="0.01"
-                            />
-                            <Percent className="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-500" size={16} />
-                        </div>
-                    </div>
                 </div>
 
                 {/* Configuración de Períodos de Gracia */}

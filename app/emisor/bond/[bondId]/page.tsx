@@ -220,8 +220,8 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
       const ctx = flowChartRef.current.getContext("2d")
       if (ctx) {
         const periods = flows.map((flow) => flow.periodo.toString())
-        const issuerFlows = flows.map((flow) => flow.flujoEmisorConEscudo || 0)
-        const indexedBonds = flows.map((flow) => flow.bonoIndexado || 0)
+        const issuerFlows = flows.map((flow) => flow.flujoEmisor || 0)
+        const indexedBonds = flows.map((flow) => (flow.flujoEmisor || 0) * -1)
 
         flowChartInstance.current = new Chart(ctx, {
           type: "bar",
@@ -229,14 +229,14 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
             labels: periods,
             datasets: [
               {
-                label: "Flujo Emisor c/Escudo",
+                label: "Flujo Emisor",
                 type: "bar",
                 data: issuerFlows,
                 backgroundColor: "#39FF14",
                 order: 1,
               },
               {
-                label: "Bono Indexado",
+                label: "Flujo Inversor",
                 type: "line",
                 data: indexedBonds,
                 borderColor: "#FF33FF",
@@ -266,7 +266,7 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
               },
               y1: {
                 position: "right",
-                title: { display: true, text: "Bono Indexado (USD)", color: "#CCCCCC" },
+                title: { display: true, text: "Flujo Inversor (USD)", color: "#CCCCCC" },
                 grid: { drawOnChartArea: false },
                 ticks: { color: "#CCCCCC" },
               },
@@ -330,6 +330,10 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
   const duracion = metricas?.duracion || 0
   const convexidad = metricas?.convexidad || 0
   const duracionModificada = metricas?.duracionModificada || 0
+
+  // Calcular precio del bono: VAN Emisor - flujo inicial (período 0)
+  const flujoInicial = flows.length > 0 ? flows.find(flow => flow.periodo === 0)?.flujoEmisor || 0 : 0
+  const precioBono = hasFlowsData && vanEmisor !== 0 ? - vanEmisor - flujoInicial : bond?.valorComercial || 0
 
   return (
       <div className="min-h-screen bg-[#0D0D0D] text-white">
@@ -521,12 +525,12 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
                     <h2 className="text-xl font-semibold mb-6">Indicadores Clave (Emisor)</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="bg-[#1E1E1E] rounded-lg p-4">
-                        <p className="text-gray-400 text-xs mb-1">Precio Neto Recibido Emisor</p>
-                        <p className="text-[#39FF14] font-medium text-lg">{formatCurrency(bond?.valorComercial)}</p>
+                        <p className="text-gray-400 text-xs mb-1">Precio Bono</p>
+                        <p className="text-[#39FF14] font-medium text-lg">{formatCurrency(precioBono)}</p>
                       </div>
                       <div className="bg-[#1E1E1E] rounded-lg p-4">
                         <p className="text-gray-400 text-xs mb-1">VAN Emisor</p>
-                        <p className="text-[#39FF14] font-medium text-lg">{formatCurrency(vanEmisor)}</p>
+                        <p className="text-[#39FF14] font-medium text-lg">{formatCurrency(-vanEmisor)}</p>
                       </div>
                       <div className="bg-[#1E1E1E] rounded-lg p-4">
                         <p className="text-gray-400 text-xs mb-1">Duración</p>
@@ -541,12 +545,12 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
                         </p>
                       </div>
                       <div className="bg-[#1E1E1E] rounded-lg p-4">
-                        <p className="text-gray-400 text-xs mb-1">TCEA Emisor (bruta)</p>
+                        <p className="text-gray-400 text-xs mb-1">TCEA Emisor</p>
                         <p className="text-[#39FF14] font-medium text-lg">{formatPercent(metricas?.tcea)}</p>
                       </div>
                       <div className="bg-[#1E1E1E] rounded-lg p-4">
-                        <p className="text-gray-400 text-xs mb-1">TCEA Emisor (c/Escudo)</p>
-                        <p className="text-[#39FF14] font-medium text-lg">{formatPercent(tceaEmisor)}</p>
+                        <p className="text-gray-400 text-xs mb-1">TREA Inversor</p>
+                        <p className="text-[#39FF14] font-medium text-lg">{formatPercent(metricas?.tcea)}</p>
                       </div>
                     </div>
                   </div>
@@ -594,23 +598,20 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
                 </div>
 
                 {hasFlowsData ? (
-                    <div className="relative overflow-x-auto">
+                    <div className="w-full overflow-x-auto">
                       <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#151515] to-transparent pointer-events-none z-10"></div>
-                      <table className="w-full border-collapse min-w-[1200px]">
+                      <table className="min-w-full border-collapse">
                         <thead>
                         <tr className="bg-[#1A1A1A] text-gray-400 text-xs">
-                          <th className="py-2 px-3 text-center font-medium sticky left-0 bg-[#1A1A1A] z-10">Nº</th>
-                          <th className="py-2 px-3 text-left font-medium">Fecha</th>
-                          <th className="py-2 px-3 text-right font-medium">Infl. Anual</th>
-                          <th className="py-2 px-3 text-right font-medium">Infl. Sem.</th>
-                          <th className="py-2 px-3 text-center font-medium">P. Gracia</th>
-                          <th className="py-2 px-3 text-right font-medium">Bono Indexado</th>
-                          <th className="py-2 px-3 text-right font-medium">Cupón (Int.)</th>
-                          <th className="py-2 px-3 text-right font-medium">Amort.</th>
-                          <th className="py-2 px-3 text-right font-medium">Prima</th>
-                          <th className="py-2 px-3 text-right font-medium">Escudo</th>
-                          <th className="py-2 px-3 text-right font-medium">Flujo Emisor</th>
-                          <th className="py-2 px-3 text-right font-medium">Flujo Emisor c/Escudo</th>
+                          <th className="py-2 px-2 text-center font-medium sticky left-0 bg-[#1A1A1A] z-10">Nº</th>
+                          <th className="py-2 px-2 text-left font-medium">Fecha</th>
+                          <th className="py-2 px-2 text-center font-medium">P. Gracia</th>
+                          <th className="py-2 px-2 text-right font-medium">Bono Indexado</th>
+                          <th className="py-2 px-2 text-right font-medium">Cupón (Int.)</th>
+                          <th className="py-2 px-2 text-right font-medium">Amort.</th>
+                          <th className="py-2 px-2 text-right font-medium">Prima</th>
+                          <th className="py-2 px-2 text-right font-medium">Escudo</th>
+                          <th className="py-2 px-2 text-right font-medium">Flujo Emisor</th>
                         </tr>
                         </thead>
                         <tbody className="text-sm">
@@ -619,40 +620,28 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
                               <td className="py-2 px-3 text-center sticky left-0 bg-[#151515] hover:bg-[#1E1E1E] z-10">
                                 {flow.periodo}
                               </td>
-                              <td className="py-2 px-3 text-left">{formatDate(flow.fecha)}</td>
-                              <td className="py-2 px-3 text-right">
-                                {flow.inflacionAnual !== null ? `${flow.inflacionAnual.toFixed(2)}%` : "-"}
-                              </td>
-                              <td className="py-2 px-3 text-right">
-                                {flow.inflacionSemestral !== null ? `${flow.inflacionSemestral.toFixed(3)}%` : "-"}
-                              </td>
-                              <td className="py-2 px-3 text-center">{flow.periodoGracia || "-"}</td>
-                              <td className="py-2 px-3 text-right">
+                              <td className="py-2 px-2 text-left">{formatDate(flow.fecha)}</td>
+                              <td className="py-2 px-2 text-center">{flow.periodoGracia || "-"}</td>
+                              <td className="py-2 px-2 text-right">
                                 {flow.bonoIndexado !== null ? formatCurrency(flow.bonoIndexado) : "-"}
                               </td>
-                              <td className={`py-2 px-3 text-right ${flow.cupon && flow.cupon < 0 ? "text-red-500" : ""}`}>
+                              <td className={`py-2 px-2 text-right ${flow.cupon && flow.cupon < 0 ? "text-red-500" : ""}`}>
                                 {flow.cupon !== null ? formatCurrency(flow.cupon) : "-"}
                               </td>
-                              <td className={`py-2 px-3 text-right ${flow.amortizacion && flow.amortizacion < 0 ? "text-red-500" : ""}`}>
+                              <td className={`py-2 px-2 text-right ${flow.amortizacion && flow.amortizacion < 0 ? "text-red-500" : ""}`}>
                                 {flow.amortizacion !== null ? formatCurrency(flow.amortizacion) : "-"}
                               </td>
-                              <td className={`py-2 px-3 text-right ${flow.prima && flow.prima < 0 ? "text-red-500" : ""}`}>
+                              <td className={`py-2 px-2 text-right ${flow.prima && flow.prima < 0 ? "text-red-500" : ""}`}>
                                 {flow.prima !== null ? formatCurrency(flow.prima) : "-"}
                               </td>
-                              <td className={`py-2 px-3 text-right ${flow.escudoFiscal && flow.escudoFiscal > 0 ? "text-green-500" : ""}`}>
+                              <td className={`py-2 px-2 text-right ${flow.escudoFiscal && flow.escudoFiscal > 0 ? "text-green-500" : ""}`}>
                                 {flow.escudoFiscal !== null ? formatCurrency(flow.escudoFiscal) : "-"}
                               </td>
-                              <td className={`py-2 px-3 text-right ${
+                              <td className={`py-2 px-2 text-right ${
                                   flow.flujoEmisor && flow.flujoEmisor > 0 ? "text-green-500" :
                                       flow.flujoEmisor && flow.flujoEmisor < 0 ? "text-red-500" : ""
                               }`}>
                                 {flow.flujoEmisor !== null ? formatCurrency(flow.flujoEmisor) : "-"}
-                              </td>
-                              <td className={`py-2 px-3 text-right ${
-                                  flow.flujoEmisorConEscudo && flow.flujoEmisorConEscudo > 0 ? "text-green-500" :
-                                      flow.flujoEmisorConEscudo && flow.flujoEmisorConEscudo < 0 ? "text-red-500" : ""
-                              }`}>
-                                {flow.flujoEmisorConEscudo !== null ? formatCurrency(flow.flujoEmisorConEscudo) : "-"}
                               </td>
                             </tr>
                         ))}
@@ -691,8 +680,8 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
                           <p className="text-[#39FF14] font-medium text-xl">{formatCurrency(vanEmisor)}</p>
                         </div>
                         <div className="bg-[#1E1E1E] rounded-lg p-4">
-                          <p className="text-gray-400 text-sm mb-1">TIR Emisor (bruta)</p>
-                          <p className="text-[#39FF14] font-medium text-xl">{formatPercent(metricas?.tcea)}</p>
+                          <p className="text-gray-400 text-sm mb-1">TIR Emisor (TCEA)</p>
+                          <p className="text-[#39FF14] font-medium text-xl">{formatPercent(metricas?.tceaEmisor)}</p>
                         </div>
                         <div className="bg-[#1E1E1E] rounded-lg p-4">
                           <p className="text-gray-400 text-sm mb-1">Duración Modificada</p>
@@ -717,7 +706,7 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
                         </p>
                       </div>
 
-                      <h2 className="text-xl font-semibold mb-6">Gráfico Flujo Emisor vs. Bono Indexado</h2>
+                      <h2 className="text-xl font-semibold mb-6">Gráfico Flujo Emisor vs. Inversor</h2>
                       <div className="h-[400px]">
                         <canvas ref={flowChartRef}></canvas>
                       </div>

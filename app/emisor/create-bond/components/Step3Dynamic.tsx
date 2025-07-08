@@ -56,7 +56,7 @@ export default function Step3Dynamic({ bondData, saveDataAction }: Step3Props) {
         return {
             emisorTotalAbs: emisorCostAbs,
             bonistaTotalAbs: bonistaCostAbs,
-            totalCostsAbs: emisorCostAbs + bonistaCostAbs,
+            totalCostsAbs: emisorCostAbs,
             flotacionBonistaVal,
             cavaliBonistaVal,
         };
@@ -94,9 +94,9 @@ export default function Step3Dynamic({ bondData, saveDataAction }: Step3Props) {
                             <thead>
                             <tr className="border-b border-[#2A2A2A] text-[#AAAAAA]">
                                 <th className="text-left py-3 px-3 font-medium text-sm">Concepto</th>
-                                <th className="text-center py-3 px-3 font-medium text-sm">% Total (Mercado)</th>
-                                <th className="text-center py-3 px-3 font-medium text-sm">% Emisor (Asumido)</th>
-                                <th className="text-center py-3 px-3 font-medium text-sm">% Bonista (Calculado)</th>
+                                <th className="text-center py-3 px-3 font-medium text-sm">% Mercado</th>
+                                <th className="text-center py-3 px-3 font-medium text-sm">% Emisor</th>
+                                <th className="text-center py-3 px-3 font-medium text-sm">% Bonista</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -112,7 +112,7 @@ export default function Step3Dynamic({ bondData, saveDataAction }: Step3Props) {
                                             className="w-full bg-transparent text-white border border-[#2A2A2A] rounded-lg px-3 py-2 text-center focus:outline-none focus:border-[#39FF14] transition"
                                             step="0.01"
                                             min="0"
-                                            max="1"
+                                            max="0"
                                         />
                                         <div className="absolute inset-y-0 right-2 flex items-center text-gray-500 pointer-events-none text-xs">
                                             %
@@ -144,7 +144,7 @@ export default function Step3Dynamic({ bondData, saveDataAction }: Step3Props) {
                             </tr>
                             <tr className="border-b border-[#2A2A2A]">
                                 <td className="py-4 px-3">Flotación</td>
-                                <td className="py-2 px-3 text-center text-white">0.45%</td>
+                                <td className="py-2 px-3 text-center text-white">0.35%</td>
                                 <td className="py-2 px-3">
                                     <div className="relative">
                                         <input
@@ -196,10 +196,6 @@ export default function Step3Dynamic({ bondData, saveDataAction }: Step3Props) {
                             <div>
                                 <p className="text-gray-400 text-sm mb-1">Costes Emisor</p>
                                 <p className="text-[#39FF14] text-2xl font-semibold">{formatCurrency(costs.emisorTotalAbs)}</p>
-                            </div>
-                            <div>
-                                <p className="text-gray-400 text-sm mb-1">Costes Bonista</p>
-                                <p className="text-[#39FF14] text-2xl font-semibold">{formatCurrency(costs.bonistaTotalAbs)}</p>
                             </div>
                             <div className="pt-4 border-t border-[#2A2A2A]">
                                 <p className="text-gray-400 text-sm mb-1">Total Costes</p>

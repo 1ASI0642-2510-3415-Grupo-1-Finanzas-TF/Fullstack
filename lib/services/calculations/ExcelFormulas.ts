@@ -441,6 +441,28 @@ export class ExcelFormulas {
     }
 
     /**
+     * Flujo Bonista con Costes Iniciales
+     * Período 0: -(valorComercial + costesInicialesBonista)
+     * Otros períodos: igual al flujo bonista normal
+     */
+    static flujoBonistaConCostes(
+        periodo: number,
+        valorComercial: number,
+        costesInicialesBonista: number,
+        flujoEmisor: number
+    ): number {
+        if (periodo === 0) {
+            return new Decimal(valorComercial)
+                .plus(costesInicialesBonista)
+                .negated()
+                .toNumber();
+        }
+
+        // Para otros períodos, usar el flujo bonista normal
+        return new Decimal(flujoEmisor).negated().toNumber();
+    }
+
+    /**
      * Q[n]: FA × Plazo (Para duración)
      * =P[n]*A[n]*(L4/E8)
      */
@@ -557,6 +579,38 @@ export class ExcelFormulas {
     ): number {
         return new Decimal(duracion)
             .div(new Decimal(1).plus(tasaDescuentoPeriodica))
+            .toNumber();
+    }
+
+    /**
+     * TREA del Bonista (considerando sus costes iniciales)
+     */
+    static treaBonista(
+        flujos: number[],
+        fechas: Date[],
+        diasPorAno: number,
+        frecuenciaCuponDias: number,
+        valorComercial: number,
+        costesInicialesBonista: number
+    ): number {
+        // Crear flujos del bonista con sus costes
+        const flujosBonista = flujos.map((flujo, index) => {
+            if (index === 0) {
+                return new Decimal(valorComercial)
+                    .plus(costesInicialesBonista)
+                    .negated()
+                    .toNumber();
+            }
+            return new Decimal(flujo).negated().toNumber();
+        });
+
+        const tir = this.calcularTIR(flujosBonista, fechas);
+        const factorAnualizacion = diasPorAno / frecuenciaCuponDias;
+
+        return new Decimal(1)
+            .plus(tir)
+            .pow(factorAnualizacion)
+            .minus(1)
             .toNumber();
     }
 
