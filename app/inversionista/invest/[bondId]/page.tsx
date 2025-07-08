@@ -102,8 +102,9 @@ export default function InvestBondWizard() {
     }
   }
 
-  // Flujos de caja simulados
+  // Flujo de caja proyectado
   const flowProjections: FlowProjection[] = bondDetails ? [
+    // Período 0 - inicial
     {
       period: 0,
       date: formatDate(bondDetails.issueDate),
@@ -114,62 +115,31 @@ export default function InvestBondWizard() {
       amortization: 0,
       investorFlow: -(bondDetails.commercialPrice + investmentCosts.total)
     },
-    {
-      period: 1,
-      date: formatDate(bondDetails.flows[1].date),
-      gracePeriod: bondDetails.flows[1].investorFlow === undefined ? 'T' : bondDetails.flows[1].gracePeriod,
-      indexedBond: bondDetails.nominalValue,
-      coupon: (bondDetails.nominalValue * bondDetails.couponRate),
-      premium: 0,
-      amortization: 0,
-      investorFlow: bondDetails.flows[1].investorFlow?? 0
-    },
-    {
-      period: 2,
-      date: formatDate(bondDetails.flows[2].date),
-      gracePeriod:
-          bondDetails.flows[1].investorFlow === undefined &&
-          bondDetails.flows[2].investorFlow !== undefined
-              ? 'P'
-              : bondDetails.flows[1].gracePeriod,
-      indexedBond: bondDetails.nominalValue + bondDetails.nominalValue * bondDetails.couponRate,
-      coupon: (bondDetails.nominalValue + ( bondDetails.nominalValue * bondDetails.couponRate)) * bondDetails.couponRate,
-      premium: bondDetails.flows[2].premium ?? 0,
-      amortization: 0,
-      investorFlow: bondDetails.flows[2].investorFlow?? 0
-    },
-    {
-      period: 3,
-      date: formatDate(bondDetails.flows[3].date),
-      gracePeriod: bondDetails.flows[3].gracePeriod,
-      indexedBond:  bondDetails.nominalValue + bondDetails.nominalValue * bondDetails.couponRate,
-      coupon: (bondDetails.nominalValue + ( bondDetails.nominalValue * bondDetails.couponRate)) * bondDetails.couponRate,
-      premium: bondDetails.flows[3].premium ?? 0,
-      amortization: 0,
-      investorFlow: bondDetails.flows[3].investorFlow?? 0
-    },
-    {
-      period: 4,
-      date: formatDate(bondDetails.flows[4].date),
-      gracePeriod: bondDetails.flows[4].gracePeriod,
-      indexedBond:  bondDetails.nominalValue + bondDetails.nominalValue * bondDetails.couponRate,
-      coupon: (bondDetails.nominalValue + ( bondDetails.nominalValue * bondDetails.couponRate)) * bondDetails.couponRate,
-      premium: bondDetails.flows[4].premium ?? 0,
-      amortization: 0,
-      investorFlow: bondDetails.flows[4].investorFlow?? 0
-    },
-    {
-      period: 5,
-      date: formatDate(bondDetails.maturityDate),
-      gracePeriod: bondDetails.flows[5].gracePeriod,
-      indexedBond:  bondDetails.nominalValue + bondDetails.nominalValue * bondDetails.couponRate,
-      coupon: (bondDetails.nominalValue + ( bondDetails.nominalValue * bondDetails.couponRate)) * bondDetails.couponRate,
-      premium: bondDetails.flows[5].premium ?? 0,
-      amortization: 0,
-      // Continuar con el flujo de caja del inversionista
-      investorFlow: bondDetails.flows[5].investorFlow?? 0
-    },
-  ] : []
+    // Períodos dinámicos basados en bondDetails.flows
+    ...bondDetails.flows.slice(1).map((flow, index) => {
+      const period = index + 1;
+      const isLastPeriod = period === bondDetails.flows.length - 1;
+
+      return {
+        period,
+        date: formatDate(isLastPeriod ? bondDetails.maturityDate : flow.date),
+        gracePeriod: period === 1
+            ? (flow.investorFlow === undefined ? 'T' : flow.gracePeriod)
+            : period === 2
+                ? (bondDetails.flows[1].investorFlow === undefined && flow.investorFlow !== undefined ? 'P' : bondDetails.flows[1].gracePeriod)
+                : flow.gracePeriod,
+        indexedBond: period === 1
+            ? bondDetails.nominalValue
+            : bondDetails.nominalValue + bondDetails.nominalValue * bondDetails.couponRate,
+        coupon: period === 1
+            ? (bondDetails.nominalValue * bondDetails.couponRate)
+            : (bondDetails.nominalValue + (bondDetails.nominalValue * bondDetails.couponRate)) * bondDetails.couponRate,
+        premium: flow.premium ?? 0,
+        amortization: 0,
+        investorFlow: flow.investorFlow ?? 0
+      };
+    })
+  ] : [];
 
   useEffect(() => {
     if (user?.inversionistaProfile) {
@@ -539,27 +509,17 @@ export default function InvestBondWizard() {
                       <table className="w-full min-w-[1000px]">
                         <thead>
                           <tr className="border-b border-[#2A2A2A]">
-                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Período</th>
-                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Fecha</th>
-                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Período de Gracia</th>
-                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Bono Indexado</th>
-                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Cupón</th>
-                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Prima</th>
-                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Amortización</th>
-                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-400">Flujo Inversionista</th>
+                            <th className="px-2 py-2 text-left text-sm font-medium text-gray-400">Período</th>
+                            <th className="px-2 py-2 text-left text-sm font-medium text-gray-400">Fecha</th>
+                            <th className="px-2 py-2 text-left text-sm font-medium text-gray-400">Flujo Inversionista</th>
                           </tr>
                         </thead>
                         <tbody>
                           {flowProjections.map((flow) => (
                             <tr key={flow.period} className="border-b border-[#2A2A2A] hover:bg-[#1A1A1A]">
-                              <td className="px-4 py-2 text-sm">{flow.period}</td>
-                              <td className="px-4 py-2 text-sm">{flow.date}</td>
-                              <td className="px-4 py-2 text-sm">{flow.gracePeriod ?? "-"}</td>
-                              <td className="px-4 py-2 text-sm">{formatCurrency(flow.indexedBond ?? "-")}</td>
-                              <td className="px-4 py-2 text-sm">{formatCurrency(flow.coupon ?? "-")}</td>
-                              <td className="px-4 py-2 text-sm">{formatCurrency(flow.premium) ?? "-"}</td>
-                              <td className="px-4 py-2 text-sm">{ formatCurrency(flow.amortization ?? "-")}</td>
-                              <td className="px-4 py-2 text-sm">{formatCurrency(flow.investorFlow?? 0)}</td>
+                              <td className="px-2 py-2 text-sm">{flow.period}</td>
+                              <td className="px-2 py-2 text-sm">{flow.date}</td>
+                              <td className="px-2 py-2 text-sm">{formatCurrency(flow.investorFlow?? 0)}</td>
                             </tr>
                           ))}
                         </tbody>

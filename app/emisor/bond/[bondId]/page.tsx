@@ -545,12 +545,12 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
                         </p>
                       </div>
                       <div className="bg-[#1E1E1E] rounded-lg p-4">
-                        <p className="text-gray-400 text-xs mb-1">TCEA Emisor (bruta)</p>
+                        <p className="text-gray-400 text-xs mb-1">TCEA Emisor</p>
                         <p className="text-[#39FF14] font-medium text-lg">{formatPercent(metricas?.tcea)}</p>
                       </div>
                       <div className="bg-[#1E1E1E] rounded-lg p-4">
-                        <p className="text-gray-400 text-xs mb-1">TCEA Emisor (c/Escudo)</p>
-                        <p className="text-[#39FF14] font-medium text-lg">{formatPercent(tceaEmisor)}</p>
+                        <p className="text-gray-400 text-xs mb-1">TREA Inversor</p>
+                        <p className="text-[#39FF14] font-medium text-lg">{formatPercent(metricas?.tcea)}</p>
                       </div>
                     </div>
                   </div>
@@ -612,7 +612,6 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
                           <th className="py-2 px-2 text-right font-medium">Prima</th>
                           <th className="py-2 px-2 text-right font-medium">Escudo</th>
                           <th className="py-2 px-2 text-right font-medium">Flujo Emisor</th>
-                          <th className="py-2 px-2 text-right font-medium">Flujo Emisor c/Escudo</th>
                         </tr>
                         </thead>
                         <tbody className="text-sm">
@@ -643,12 +642,6 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
                                       flow.flujoEmisor && flow.flujoEmisor < 0 ? "text-red-500" : ""
                               }`}>
                                 {flow.flujoEmisor !== null ? formatCurrency(flow.flujoEmisor) : "-"}
-                              </td>
-                              <td className={`py-2 px-2 text-right ${
-                                  flow.flujoEmisorConEscudo && flow.flujoEmisorConEscudo > 0 ? "text-green-500" :
-                                      flow.flujoEmisorConEscudo && flow.flujoEmisorConEscudo < 0 ? "text-red-500" : ""
-                              }`}>
-                                {flow.flujoEmisorConEscudo !== null ? formatCurrency(flow.flujoEmisorConEscudo) : "-"}
                               </td>
                             </tr>
                         ))}
@@ -688,7 +681,7 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
                         </div>
                         <div className="bg-[#1E1E1E] rounded-lg p-4">
                           <p className="text-gray-400 text-sm mb-1">TIR Emisor (TCEA)</p>
-                          <p className="text-[#39FF14] font-medium text-xl">{formatPercent(metricas?.tcea)}</p>
+                          <p className="text-[#39FF14] font-medium text-xl">{formatPercent(metricas?.tceaEmisor)}</p>
                         </div>
                         <div className="bg-[#1E1E1E] rounded-lg p-4">
                           <p className="text-gray-400 text-sm mb-1">Duración Modificada</p>
