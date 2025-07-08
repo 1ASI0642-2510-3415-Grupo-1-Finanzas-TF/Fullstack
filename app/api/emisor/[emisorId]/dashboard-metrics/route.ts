@@ -1,6 +1,6 @@
 // app/api/emisor/[emisorId]/dashboard-metrics/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient, MetricsRole } from '../../../../../lib/generated/client';
+import { PrismaClient, MetricsRole, BondStatus } from '@/lib/generated/client';
 import { z } from 'zod';
 
 const prisma = new PrismaClient();
@@ -60,7 +60,7 @@ export async function GET(
 
         // 3. Calcular KPIs agregados
         const totalBonds = bonds.length;
-        const activeBonds = bonds.filter(bond => bond.status === 'ACTIVE');
+        const activeBonds = bonds.filter(bond => bond.status === BondStatus.ACTIVE);
         const activeBondsCount = activeBonds.length;
 
         // Total valor nominal de bonos activos
@@ -136,7 +136,7 @@ export async function GET(
             nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 6); // 6 meses aprox
         }
 
-        // 6. Formatear respuesta
+        // 6. Formatear respuesta con enum values válidos
         const metrics = {
             totalBonds,
             activeBonds: activeBondsCount,
@@ -147,10 +147,15 @@ export async function GET(
                 amount: nextPaymentAmount,
                 date: nextPaymentDate?.toISOString().split('T')[0] || null,
             },
-            // Métricas adicionales
-            draftBonds: bonds.filter(bond => bond.status === 'DRAFT').length,
-            pausedBonds: bonds.filter(bond => bond.status === 'PAUSED').length,
-            completedBonds: bonds.filter(bond => bond.status === 'COMPLETED').length,
+            // Métricas adicionales usando enum values
+            draftBonds: bonds.filter(bond => bond.status === BondStatus.DRAFT).length,
+            // Solo incluir estas métricas si los valores existen en el enum
+            ...(Object.values(BondStatus).includes('ACTIVE' as BondStatus) && {
+                pausedBonds: bonds.filter(bond => bond.status === 'ACTIVE').length,
+            }),
+            ...(Object.values(BondStatus).includes('COMPLETED' as BondStatus) && {
+                completedBonds: bonds.filter(bond => bond.status === 'EXPIRED').length,
+            }),
         };
 
         console.log('✅ Métricas calculadas:', metrics);
