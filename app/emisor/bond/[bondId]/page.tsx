@@ -610,7 +610,6 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
                           <th className="py-2 px-2 text-right font-medium">Cupón (Int.)</th>
                           <th className="py-2 px-2 text-right font-medium">Amort.</th>
                           <th className="py-2 px-2 text-right font-medium">Prima</th>
-                          <th className="py-2 px-2 text-right font-medium">Escudo</th>
                           <th className="py-2 px-2 text-right font-medium">Flujo Emisor</th>
                         </tr>
                         </thead>
@@ -633,9 +632,6 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
                               </td>
                               <td className={`py-2 px-2 text-right ${flow.prima && flow.prima < 0 ? "text-red-500" : ""}`}>
                                 {flow.prima !== null ? formatCurrency(flow.prima) : "-"}
-                              </td>
-                              <td className={`py-2 px-2 text-right ${flow.escudoFiscal && flow.escudoFiscal > 0 ? "text-green-500" : ""}`}>
-                                {flow.escudoFiscal !== null ? formatCurrency(flow.escudoFiscal) : "-"}
                               </td>
                               <td className={`py-2 px-2 text-right ${
                                   flow.flujoEmisor && flow.flujoEmisor > 0 ? "text-green-500" :
