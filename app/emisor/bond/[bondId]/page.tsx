@@ -220,8 +220,8 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
       const ctx = flowChartRef.current.getContext("2d")
       if (ctx) {
         const periods = flows.map((flow) => flow.periodo.toString())
-        const issuerFlows = flows.map((flow) => flow.flujoEmisorConEscudo || 0)
-        const indexedBonds = flows.map((flow) => flow.bonoIndexado || 0)
+        const issuerFlows = flows.map((flow) => flow.flujoEmisor || 0)
+        const indexedBonds = flows.map((flow) => (flow.flujoEmisor || 0) * -1)
 
         flowChartInstance.current = new Chart(ctx, {
           type: "bar",
@@ -229,14 +229,14 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
             labels: periods,
             datasets: [
               {
-                label: "Flujo Emisor c/Escudo",
+                label: "Flujo Emisor",
                 type: "bar",
                 data: issuerFlows,
                 backgroundColor: "#39FF14",
                 order: 1,
               },
               {
-                label: "Bono Indexado",
+                label: "Flujo Inversor",
                 type: "line",
                 data: indexedBonds,
                 borderColor: "#FF33FF",
@@ -266,7 +266,7 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
               },
               y1: {
                 position: "right",
-                title: { display: true, text: "Bono Indexado (USD)", color: "#CCCCCC" },
+                title: { display: true, text: "Flujo Inversor (USD)", color: "#CCCCCC" },
                 grid: { drawOnChartArea: false },
                 ticks: { color: "#CCCCCC" },
               },
@@ -706,7 +706,7 @@ export default function BondDetailPage({ params, searchParams }: BondDetailProps
                         </p>
                       </div>
 
-                      <h2 className="text-xl font-semibold mb-6">Gráfico Flujo Emisor vs. Bono Indexado</h2>
+                      <h2 className="text-xl font-semibold mb-6">Gráfico Flujo Emisor vs. Inversor</h2>
                       <div className="h-[400px]">
                         <canvas ref={flowChartRef}></canvas>
                       </div>
