@@ -171,7 +171,7 @@ export default function Step4Dynamic({ bondData, bondId }: Step4Props) {
     const formatCurrency = (amount: string | number | null | undefined) => {
         return new Intl.NumberFormat("en-US", {
             style: "currency",
-            currency: "$",
+            currency: "USD",
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         }).format(typeof amount === 'string' ? parseFloat(amount) : amount || 0);
